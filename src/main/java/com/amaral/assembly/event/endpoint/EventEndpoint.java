@@ -1,9 +1,7 @@
 package com.amaral.assembly.event.endpoint;
 
-import com.amaral.assembly.event.domain.Event;
 import com.amaral.assembly.event.domain.EventDTO;
 import com.amaral.assembly.event.service.EventService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,7 +16,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/event")
@@ -29,14 +26,10 @@ public class EventEndpoint {
     @Autowired
     private EventService service;
 
-    @Autowired
-    private ModelMapper mapper;
-
     @GetMapping
     public ResponseEntity<List<EventDTO>> findAll() {
 
-        List<EventDTO> body = service.findAll()
-                .stream().map(obj -> mapper.map(obj, EventDTO.class)).collect(Collectors.toList());
+        List<EventDTO> body = service.findAll();
 
         return ResponseEntity.ok(body);
     }
@@ -44,18 +37,18 @@ public class EventEndpoint {
     @GetMapping(value = ID)
     public ResponseEntity<EventDTO> findById(@PathVariable Integer id) {
 
-        EventDTO body = mapper.map(service.findById(id), EventDTO.class);
+        EventDTO body = service.findById(id);
 
         return ResponseEntity.ok(body);
     }
 
     @PostMapping
-    public ResponseEntity<EventDTO> create(@RequestBody EventDTO obj) {
+    public ResponseEntity<EventDTO> create(@RequestBody EventDTO body) {
 
-        Event event = service.create(mapper.map(obj, Event.class));
+        EventDTO obj = service.create(body);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path(ID).buildAndExpand(event.getId()).toUri();
+                .path(ID).buildAndExpand(obj.getId()).toUri();
 
         return ResponseEntity.created(uri).build();
     }
@@ -65,9 +58,7 @@ public class EventEndpoint {
 
         obj.setId(id);
 
-        Event event = service.update(mapper.map(obj, Event.class));
-
-        EventDTO body = mapper.map(event, EventDTO.class);
+        EventDTO body = service.update(obj);
 
         return ResponseEntity.ok(body);
     }

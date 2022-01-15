@@ -3,6 +3,7 @@ package com.amaral.assembly.minute.service;
 import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.common.exception.ObjectNotFoundException;
 import com.amaral.assembly.event.domain.Event;
+import com.amaral.assembly.event.domain.EventDTO;
 import com.amaral.assembly.event.service.EventService;
 import com.amaral.assembly.minute.domain.Minute;
 import com.amaral.assembly.minute.domain.MinuteDTO;
@@ -63,10 +64,12 @@ public class MinuteService {
 
     private MinuteDTO save(MinuteDTO obj) {
 
-        Event event = eventService.findById(obj.getEventId());
+        EventDTO eventDTO = eventService.findById(obj.getEventId());
+
+        Event event = new Event();
+        event.setId(eventDTO.getId());
 
         Minute entity = mapper.map(obj, Minute.class);
-
         entity.setEvent(event);
 
         entity = repository.save(entity);
