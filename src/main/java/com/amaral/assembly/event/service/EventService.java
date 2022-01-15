@@ -24,7 +24,7 @@ public class EventService {
 
         Optional<Event> obj = repository.findById(id);
 
-        return obj.orElseThrow(() -> new ObjectNotFoundException("object.not.found"));
+        return obj.orElseThrow(() -> new ObjectNotFoundException("event.not.found"));
     }
 
     public Event create(Event obj) {
