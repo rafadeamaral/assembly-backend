@@ -4,6 +4,7 @@ import com.amaral.assembly.common.context.LocaleContext;
 import com.amaral.assembly.common.domain.StandardError;
 import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.common.exception.ObjectNotFoundException;
+import com.amaral.assembly.common.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -28,8 +29,8 @@ public class EcxeptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler(DataIntegratyViolationException.class)
-    public ResponseEntity<StandardError> dataIntegrityViolationException(DataIntegratyViolationException ex, HttpServletRequest request) {
+    @ExceptionHandler({ DataIntegratyViolationException.class, ServiceException.class })
+    public ResponseEntity<StandardError> dataIntegrityViolationAndServiceException(Exception ex, HttpServletRequest request) {
 
         StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), getMessage(ex.getMessage()), request.getRequestURI());
 

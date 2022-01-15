@@ -1,6 +1,7 @@
 package com.amaral.assembly.minute.endpoint;
 
 import com.amaral.assembly.minute.domain.MinuteDTO;
+import com.amaral.assembly.minute.domain.VoteDTO;
 import com.amaral.assembly.minute.service.MinuteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +61,16 @@ public class MinuteEndpoint {
         body = service.update(body);
 
         return ResponseEntity.ok(body);
+    }
+
+    @PostMapping(value = ID + "/vote")
+    public ResponseEntity<MinuteDTO> vote(@PathVariable Integer id, @RequestBody VoteDTO body) {
+
+        body.setId(id);
+
+        MinuteDTO response = service.vote(body);
+
+        return ResponseEntity.ok(response);
     }
 
 }

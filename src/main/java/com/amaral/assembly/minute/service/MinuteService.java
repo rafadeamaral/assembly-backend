@@ -2,20 +2,25 @@ package com.amaral.assembly.minute.service;
 
 import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.common.exception.ObjectNotFoundException;
+import com.amaral.assembly.common.exception.ServiceException;
 import com.amaral.assembly.event.domain.Event;
 import com.amaral.assembly.event.domain.EventDTO;
 import com.amaral.assembly.event.service.EventService;
 import com.amaral.assembly.minute.domain.Minute;
 import com.amaral.assembly.minute.domain.MinuteDTO;
 import com.amaral.assembly.minute.domain.MinuteStatus;
+import com.amaral.assembly.minute.domain.VoteDTO;
 import com.amaral.assembly.minute.repository.MinuteRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Service
 public class MinuteService {
@@ -85,6 +90,45 @@ public class MinuteService {
 
             throw new DataIntegratyViolationException("title.already.registered");
         }
+    }
+
+    public MinuteDTO vote(VoteDTO voteDTO) {
+
+        MinuteDTO obj = findById(voteDTO.getId());
+
+        if (!isNull(voteDTO.getTimeInMinutes())) {
+
+            if (voteDTO.getTimeInMinutes() > 0) {
+
+                obj.setFinalVote(LocalDateTime.now().plusMinutes(voteDTO.getTimeInMinutes()));
+
+            } else {
+
+                throw new ServiceException("invalid.voting.time");
+            }
+
+        } else {
+
+            obj.setFinalVote(LocalDateTime.now().plusMinutes(1));
+        }
+
+        obj.setStatus(MinuteStatus.ON_VOTE);
+
+        obj = update(obj);
+
+        return obj;
+    }
+
+    public void closeVote() {
+
+        repository.findByFinalVote(MinuteStatus.ON_VOTE, LocalDateTime.now()).forEach(minute -> {
+
+            minute.setStatus(MinuteStatus.CLOSED);
+
+            MinuteDTO obj = mapper.map(minute, MinuteDTO.class);
+
+            update(obj);
+        });
     }
 
 }

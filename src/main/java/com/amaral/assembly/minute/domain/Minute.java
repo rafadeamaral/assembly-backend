@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -29,6 +30,8 @@ public class Minute {
 
     @Enumerated(EnumType.ORDINAL)
     private MinuteStatus status;
+
+    private LocalDateTime finalVote;
 
     @ManyToOne
     private Event event;

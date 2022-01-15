@@ -3,6 +3,8 @@ package com.amaral.assembly.minute.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
 public class MinuteDTO {
@@ -14,6 +16,8 @@ public class MinuteDTO {
     private String description;
 
     private MinuteStatus status;
+
+    private LocalDateTime finalVote;
 
     private Integer eventId;
 
