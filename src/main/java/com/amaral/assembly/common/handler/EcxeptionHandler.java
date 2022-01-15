@@ -2,6 +2,7 @@ package com.amaral.assembly.common.handler;
 
 import com.amaral.assembly.common.context.LocaleContext;
 import com.amaral.assembly.common.domain.StandardError;
+import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.common.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -21,11 +22,21 @@ public class EcxeptionHandler {
 
     @ExceptionHandler(ObjectNotFoundException.class)
     public ResponseEntity<StandardError> objectNotFound(ObjectNotFoundException ex, HttpServletRequest request) {
-        StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), i18n(ex.getMessage()), request.getRequestURI());
+
+        StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), getMessage(ex.getMessage()), request.getRequestURI());
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    private String i18n(String key, Object... args) {
+    @ExceptionHandler(DataIntegratyViolationException.class)
+    public ResponseEntity<StandardError> dataIntegrityViolationException(DataIntegratyViolationException ex, HttpServletRequest request) {
+
+        StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), getMessage(ex.getMessage()), request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    private String getMessage(String key, Object... args) {
         try {
             return messageSource.getMessage(key, args, LocaleContext.get());
         } catch (Exception e) {

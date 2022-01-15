@@ -34,36 +34,49 @@ public class EventEndpoint {
 
     @GetMapping
     public ResponseEntity<List<EventDTO>> findAll() {
+
         List<EventDTO> body = service.findAll()
                 .stream().map(obj -> mapper.map(obj, EventDTO.class)).collect(Collectors.toList());
+
         return ResponseEntity.ok(body);
     }
 
     @GetMapping(value = ID)
     public ResponseEntity<EventDTO> findById(@PathVariable Integer id) {
+
         EventDTO body = mapper.map(service.findById(id), EventDTO.class);
+
         return ResponseEntity.ok(body);
     }
 
     @PostMapping
     public ResponseEntity<EventDTO> create(@RequestBody EventDTO obj) {
+
         Event event = service.create(mapper.map(obj, Event.class));
+
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path(ID).buildAndExpand(event.getId()).toUri();
+
         return ResponseEntity.created(uri).build();
     }
 
     @PutMapping(value = ID)
     public ResponseEntity<EventDTO> update(@PathVariable Integer id, @RequestBody EventDTO obj) {
+
         obj.setId(id);
-        Event event = service.create(mapper.map(obj, Event.class));
-        EventDTO body = mapper.map(service.update(event), EventDTO.class);
+
+        Event event = service.update(mapper.map(obj, Event.class));
+
+        EventDTO body = mapper.map(event, EventDTO.class);
+
         return ResponseEntity.ok(body);
     }
 
     @DeleteMapping(value = ID)
     public ResponseEntity<EventDTO> delete(@PathVariable Integer id) {
+
         service.delete(id);
+
         return ResponseEntity.noContent().build();
     }
 
