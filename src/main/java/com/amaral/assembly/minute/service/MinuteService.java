@@ -9,7 +9,7 @@ import com.amaral.assembly.event.service.EventService;
 import com.amaral.assembly.minute.domain.Minute;
 import com.amaral.assembly.minute.domain.MinuteDTO;
 import com.amaral.assembly.minute.domain.MinuteStatus;
-import com.amaral.assembly.minute.domain.VoteDTO;
+import com.amaral.assembly.minute.domain.VotingDTO;
 import com.amaral.assembly.minute.repository.MinuteRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +92,7 @@ public class MinuteService {
         }
     }
 
-    public MinuteDTO vote(VoteDTO voteDTO) {
+    public MinuteDTO voting(VotingDTO voteDTO) {
 
         MinuteDTO obj = findById(voteDTO.getId());
 
@@ -100,7 +100,7 @@ public class MinuteService {
 
             if (voteDTO.getTimeInMinutes() > 0) {
 
-                obj.setFinalVote(LocalDateTime.now().plusMinutes(voteDTO.getTimeInMinutes()));
+                obj.setFinalVoting(LocalDateTime.now().plusMinutes(voteDTO.getTimeInMinutes()));
 
             } else {
 
@@ -109,19 +109,19 @@ public class MinuteService {
 
         } else {
 
-            obj.setFinalVote(LocalDateTime.now().plusMinutes(1));
+            obj.setFinalVoting(LocalDateTime.now().plusMinutes(1));
         }
 
-        obj.setStatus(MinuteStatus.ON_VOTE);
+        obj.setStatus(MinuteStatus.ON_VOTING);
 
         obj = update(obj);
 
         return obj;
     }
 
-    public void closeVote() {
+    public void closeVoting() {
 
-        repository.findByFinalVote(MinuteStatus.ON_VOTE, LocalDateTime.now()).forEach(minute -> {
+        repository.findByFinalVoting(MinuteStatus.ON_VOTING, LocalDateTime.now()).forEach(minute -> {
 
             minute.setStatus(MinuteStatus.CLOSED);
 

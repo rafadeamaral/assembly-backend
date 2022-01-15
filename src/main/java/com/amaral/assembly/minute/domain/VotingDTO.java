@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class VoteDTO {
+public class VotingDTO {
 
     private Integer id;
 

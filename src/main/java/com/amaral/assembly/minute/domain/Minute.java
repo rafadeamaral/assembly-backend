@@ -31,7 +31,7 @@ public class Minute {
     @Enumerated(EnumType.ORDINAL)
     private MinuteStatus status;
 
-    private LocalDateTime finalVote;
+    private LocalDateTime finalVoting;
 
     @ManyToOne
     private Event event;

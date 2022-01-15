@@ -15,7 +15,7 @@ public interface MinuteRepository extends JpaRepository<Minute, Integer> {
 
     Optional<Minute> findByTitleIgnoreCase(String title);
 
-    @Query(value = "from Minute where status = ?1 and finalVote <= ?2 order by finalVote")
-    List<Minute> findByFinalVote(MinuteStatus status, LocalDateTime finalVote);
+    @Query(value = "from Minute where status = ?1 and finalVoting <= ?2 order by finalVoting")
+    List<Minute> findByFinalVoting(MinuteStatus status, LocalDateTime finalVote);
 
 }

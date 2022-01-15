@@ -17,7 +17,7 @@ public class MinuteDTO {
 
     private MinuteStatus status;
 
-    private LocalDateTime finalVote;
+    private LocalDateTime finalVoting;
 
     private Integer eventId;
 

@@ -12,9 +12,9 @@ public class MinuteScheduler {
     private MinuteService service;
 
     @Scheduled(fixedDelayString = "${minute.scheduler.delay}")
-    public void closeVote() {
+    public void closeVoting() {
 
-        service.closeVote();
+        service.closeVoting();
     }
 
 }
