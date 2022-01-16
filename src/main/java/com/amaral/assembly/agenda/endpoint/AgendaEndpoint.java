@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class AgendaEndpoint {
     }
 
     @PostMapping
-    public ResponseEntity<AgendaDTO> create(@RequestBody AgendaDTO body) {
+    public ResponseEntity<AgendaDTO> create(@Valid @RequestBody AgendaDTO body) {
 
         AgendaDTO obj = service.create(body);
 
@@ -55,7 +56,7 @@ public class AgendaEndpoint {
     }
 
     @PutMapping(value = ID)
-    public ResponseEntity<AgendaDTO> update(@PathVariable Integer id, @RequestBody AgendaDTO body) {
+    public ResponseEntity<AgendaDTO> update(@PathVariable Integer id, @Valid @RequestBody AgendaDTO body) {
 
         body.setId(id);
 
@@ -75,7 +76,7 @@ public class AgendaEndpoint {
     }
 
     @PostMapping(value = ID + "/vote")
-    public ResponseEntity<VoteDTO> vote(@PathVariable Integer id, @RequestBody VoteDTO body) {
+    public ResponseEntity<VoteDTO> vote(@PathVariable Integer id, @Valid @RequestBody VoteDTO body) {
 
         body.setAgendaId(id);
 
