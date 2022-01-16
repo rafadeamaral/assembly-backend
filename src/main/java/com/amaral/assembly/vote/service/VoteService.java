@@ -1,6 +1,5 @@
 package com.amaral.assembly.vote.service;
 
-import com.amaral.assembly.associate.domain.AssociateDTO;
 import com.amaral.assembly.associate.service.AssociateService;
 import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.vote.domain.Vote;
@@ -26,9 +25,7 @@ public class VoteService {
 
     public void create(VoteDTO obj) {
 
-        AssociateDTO associateDTO = associateService.findById(obj.getAssociateId());
-
-        associateService.validateVote(associateDTO);
+        associateService.validateVote(obj.getAssociateId());
 
         Vote entity = mapper.map(obj, Vote.class);
 

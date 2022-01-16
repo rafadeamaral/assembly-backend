@@ -94,7 +94,14 @@ public class AssociateService {
         userService.validateCpf(obj.getCpf());
     }
 
-    public void validateVote(AssociateDTO obj) {
+    public void validateVote(Integer id) {
+
+        AssociateDTO obj = findById(id);
+
+        if (AssociateStatus.INACTIVE.equals(obj.getStatus())) {
+
+            throw new ServiceException("inactive.associate");
+        }
 
         userService.validateVote(obj.getCpf());
     }
