@@ -12,6 +12,7 @@ import com.amaral.assembly.event.service.EventService;
 import com.amaral.assembly.vote.domain.VoteDTO;
 import com.amaral.assembly.vote.domain.VotingDTO;
 import com.amaral.assembly.vote.service.VoteService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
+@Slf4j
 @Service
 public class AgendaService {
 
@@ -78,6 +80,9 @@ public class AgendaService {
 
         if (!isNull(obj.getStatus())) {
 
+            log.debug("validateStatus - Agenda { id = " + dto.getId() + ", status = "
+                    + dto.getStatus() + ", newStatus = " + obj.getStatus() + " }");
+
             if (!AgendaStatus.CANCELED.equals(obj.getStatus()) && !AgendaStatus.OPEN.equals(obj.getStatus())) {
 
                 throw new ServiceException("status.must.be.canceled.or.opened");
@@ -87,6 +92,10 @@ public class AgendaService {
 
                 throw new ServiceException("status.changing.is.not.allowed");
             }
+
+        } else {
+
+            obj.setStatus(dto.getStatus());
         }
     }
 
@@ -125,9 +134,13 @@ public class AgendaService {
 
             obj.setFinalVoting(LocalDateTime.now().plusMinutes(votingDTO.getMinutes()));
 
+            log.debug("voting - Agenda { id = " + obj.getId() + ", minutes = " + votingDTO.getMinutes() + " }");
+
         } else {
 
             obj.setFinalVoting(LocalDateTime.now().plusMinutes(1));
+
+            log.debug("voting - Agenda { id = " + obj.getId() + ", minutes = 1 }");
         }
 
         obj.setStatus(AgendaStatus.ON_VOTING);
@@ -137,7 +150,7 @@ public class AgendaService {
 
     private void validateEvent(AgendaDTO obj) {
 
-        EventDTO eventDTO = eventService.findById(obj.getId());
+        EventDTO eventDTO = eventService.findById(obj.getEventId());
 
         if (LocalDate.now().isAfter(eventDTO.getDate())) {
 
@@ -164,6 +177,9 @@ public class AgendaService {
     public void closeVoting() {
 
         repository.findByFinalVoting(AgendaStatus.ON_VOTING, LocalDateTime.now()).forEach(entity -> {
+
+            log.debug("closeVoting - Agenda { id = " + entity.getId() + ", eventID = "
+                    + entity.getEvent().getId() + " }");
 
             entity.setStatus(AgendaStatus.CLOSED);
 
