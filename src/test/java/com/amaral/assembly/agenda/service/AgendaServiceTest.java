@@ -6,11 +6,13 @@ import com.amaral.assembly.agenda.domain.AgendaStatus;
 import com.amaral.assembly.agenda.repository.AgendaRepository;
 import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.common.exception.ObjectNotFoundException;
+import com.amaral.assembly.common.exception.ServiceException;
 import com.amaral.assembly.event.domain.Event;
 import com.amaral.assembly.event.domain.EventDTO;
 import com.amaral.assembly.event.service.EventService;
 import com.amaral.assembly.vote.domain.VoteDTO;
 import com.amaral.assembly.vote.domain.VotingDTO;
+import com.amaral.assembly.vote.domain.VotingResultDTO;
 import com.amaral.assembly.vote.domain.VotoAnswer;
 import com.amaral.assembly.vote.service.VoteService;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +50,8 @@ class AgendaServiceTest {
 
     private static final Long MINUTES = 1L;
 
+    private static final Long AMOUNT_TOTAL = 3L;
+
     @InjectMocks
     private AgendaService service;
 
@@ -74,6 +78,8 @@ class AgendaServiceTest {
     private EventDTO eventDTO;
 
     private VoteDTO voteDTO;
+
+    private VotingResultDTO votingResultDTO;
 
     @BeforeEach
     void setUp() {
@@ -117,6 +123,8 @@ class AgendaServiceTest {
         voteDTO.setAgendaId(ID);
         voteDTO.setAssociateId(ID);
         voteDTO.setAnswer(VotoAnswer.YES);
+
+        votingResultDTO = new VotingResultDTO(ID, 1L, 2L, AMOUNT_TOTAL);
     }
 
     private void assertObject(AgendaDTO obj) {
@@ -158,7 +166,7 @@ class AgendaServiceTest {
     }
 
     @Test
-    void whenFindByIdThenReturnAnObjectNotFoundException() {
+    void whenFindByIdThenReturnObjectNotFoundException() {
 
         when(repository.findById(anyInt())).thenReturn(Optional.empty());
 
@@ -190,7 +198,7 @@ class AgendaServiceTest {
     }
 
     @Test
-    void whenCreateThenReturnAnDataIntegrityViolationException() {
+    void whenCreateThenReturnDataIntegrityViolationException() {
 
         when(repository.findByTitleIgnoreCase(anyString())).thenReturn(optional);
 
@@ -225,7 +233,7 @@ class AgendaServiceTest {
     }
 
     @Test
-    void whenUpdateThenReturnAnDataIntegrityViolationException() {
+    void whenUpdateThenReturnDataIntegrityViolationException() {
 
         when(repository.findById(anyInt())).thenReturn(optional);
         when(mapper.map(any(Agenda.class), any())).thenReturn(agendaDTO);
@@ -256,6 +264,43 @@ class AgendaServiceTest {
         service.voting(votingDTO);
 
         verify(repository, times(1)).findById(anyInt());
+    }
+
+    @Test
+    void whenFindVotingResultByAgendaThenReturnAVotingResultDTO() {
+
+        agendaDTO.setStatus(AgendaStatus.CLOSED);
+
+        when(repository.findById(anyInt())).thenReturn(optional);
+        when(mapper.map(any(), any())).thenReturn(agendaDTO);
+        when(voteService.findVotingResultByAgenda(anyInt())).thenReturn(votingResultDTO);
+
+        VotingResultDTO response = service.findVotingResultByAgenda(ID);
+
+        assertNotNull(response);
+        assertEquals(VotingResultDTO.class, response.getClass());
+
+        assertEquals(ID, response.getAgendaId());
+        assertEquals(AMOUNT_TOTAL, response.getAmountTotal());
+    }
+
+    @Test
+    void whenFindVotingResultByAgendaThenReturnServiceException() {
+
+        when(repository.findById(anyInt())).thenReturn(optional);
+        when(mapper.map(any(), any())).thenReturn(agendaDTO);
+
+        try {
+
+            service.findVotingResultByAgenda(ID);
+
+            fail("Must throw exception");
+
+        } catch (Exception ex) {
+
+            assertEquals(ServiceException.class, ex.getClass());
+            assertEquals("agenda.voting.not.closed.or.not.started", ex.getMessage());
+        }
     }
 
     @Test

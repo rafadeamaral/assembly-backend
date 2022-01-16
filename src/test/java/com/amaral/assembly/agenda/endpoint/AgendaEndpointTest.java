@@ -5,6 +5,7 @@ import com.amaral.assembly.agenda.domain.AgendaStatus;
 import com.amaral.assembly.agenda.service.AgendaService;
 import com.amaral.assembly.vote.domain.VoteDTO;
 import com.amaral.assembly.vote.domain.VotingDTO;
+import com.amaral.assembly.vote.domain.VotingResultDTO;
 import com.amaral.assembly.vote.domain.VotoAnswer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,8 @@ class AgendaEndpointTest {
 
     private static final Long MINUTES = 1L;
 
+    private static final Long AMOUNT_TOTAL = 3L;
+
     @InjectMocks
     private AgendaEndpoint endpoint;
 
@@ -53,6 +56,8 @@ class AgendaEndpointTest {
     private VotingDTO votingDTO;
 
     private VoteDTO voteDTO;
+
+    private VotingResultDTO votingResultDTO;
 
     @BeforeEach
     void setUp() {
@@ -82,6 +87,8 @@ class AgendaEndpointTest {
         voteDTO.setAgendaId(ID);
         voteDTO.setAssociateId(ID);
         voteDTO.setAnswer(VotoAnswer.YES);
+
+        votingResultDTO = new VotingResultDTO(ID, 1L, 2L, AMOUNT_TOTAL);
     }
 
     private void assertBody(AgendaDTO body) {
@@ -104,7 +111,6 @@ class AgendaEndpointTest {
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ResponseEntity.class, response.getClass());
-        assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
         assertEquals(AgendaDTO.class, response.getBody().get(INDEX).getClass());
 
@@ -120,6 +126,7 @@ class AgendaEndpointTest {
 
         assertNotNull(response);
         assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ResponseEntity.class, response.getClass());
         assertEquals(AgendaDTO.class, response.getBody().getClass());
 
@@ -166,6 +173,23 @@ class AgendaEndpointTest {
         assertEquals(ResponseEntity.class, response.getClass());
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(service, times(1)).voting(any());
+    }
+
+    @Test
+    void whenFindVotingResultThenReturnAVotingResultDTO() {
+
+        when(service.findVotingResultByAgenda(anyInt())).thenReturn(votingResultDTO);
+
+        ResponseEntity<VotingResultDTO> response = endpoint.findVotingResult(ID);
+
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(VotingResultDTO.class, response.getBody().getClass());
+
+        assertEquals(ID, response.getBody().getAgendaId());
+        assertEquals(AMOUNT_TOTAL, response.getBody().getAmountTotal());
     }
 
     @Test
