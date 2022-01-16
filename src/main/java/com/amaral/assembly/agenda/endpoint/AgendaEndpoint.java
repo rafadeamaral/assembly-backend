@@ -68,7 +68,7 @@ public class AgendaEndpoint {
     }
 
     @PostMapping(value = ID + "/voting")
-    public ResponseEntity<AgendaDTO> voting(@PathVariable Integer id, @RequestBody VotingDTO body) {
+    public ResponseEntity<VotingDTO> voting(@PathVariable Integer id, @RequestBody VotingDTO body) {
 
         body.setId(id);
 

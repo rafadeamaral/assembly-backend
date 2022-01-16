@@ -78,14 +78,14 @@ public class AgendaService {
 
         if (!isNull(obj.getStatus())) {
 
-            if (!AgendaStatus.CANCELED.equals(obj.getStatus())) {
+            if (!AgendaStatus.CANCELED.equals(obj.getStatus()) && !AgendaStatus.OPEN.equals(obj.getStatus())) {
 
-                throw new ServiceException("status.must.be.canceled.only");
+                throw new ServiceException("status.must.be.canceled.or.opened");
             }
 
-            if (!AgendaStatus.OPEN.equals(dto.getStatus())) {
+            if (!AgendaStatus.CANCELED.equals(dto.getStatus()) && !AgendaStatus.OPEN.equals(dto.getStatus())) {
 
-                throw new ServiceException("only.allowed.cancel.open.agenda");
+                throw new ServiceException("status.changing.is.not.allowed");
             }
         }
     }
