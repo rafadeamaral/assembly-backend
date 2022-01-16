@@ -14,7 +14,7 @@ import javax.persistence.Enumerated;
 public class Vote {
 
     @EmbeddedId
-    private VoteId id;
+    private VoteId voteId;
 
     @Enumerated(EnumType.ORDINAL)
     private VotoAnswer answer;

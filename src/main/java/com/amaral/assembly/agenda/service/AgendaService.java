@@ -11,6 +11,7 @@ import com.amaral.assembly.event.domain.EventDTO;
 import com.amaral.assembly.event.service.EventService;
 import com.amaral.assembly.vote.domain.VoteDTO;
 import com.amaral.assembly.vote.domain.VotingDTO;
+import com.amaral.assembly.vote.domain.VotingResultDTO;
 import com.amaral.assembly.vote.service.VoteService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -122,7 +123,7 @@ public class AgendaService {
 
     public void voting(VotingDTO votingDTO) {
 
-        AgendaDTO obj = findById(votingDTO.getId());
+        AgendaDTO obj = findById(votingDTO.getAgendaId());
 
         validateVotingStatus(obj);
 
@@ -203,6 +204,23 @@ public class AgendaService {
         if (!AgendaStatus.ON_VOTING.equals(obj.getStatus())) {
 
             throw new ServiceException("agenda.not.open.voting");
+        }
+    }
+
+    public VotingResultDTO findVotingResultByAgenda(Integer agendaId) {
+
+        AgendaDTO obj = findById(agendaId);
+
+        validateVotingResultStatus(obj);
+
+        return voteService.findVotingResultByAgenda(agendaId);
+    }
+
+    private void validateVotingResultStatus(AgendaDTO obj) {
+
+        if (!AgendaStatus.CLOSED.equals(obj.getStatus())) {
+
+            throw new ServiceException("agenda.voting.not.closed.or.not.started");
         }
     }
 

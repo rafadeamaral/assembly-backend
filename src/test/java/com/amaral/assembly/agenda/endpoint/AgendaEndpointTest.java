@@ -75,7 +75,7 @@ class AgendaEndpointTest {
         agendaDTO.setEventId(ID);
 
         votingDTO = new VotingDTO();
-        votingDTO.setId(ID);
+        votingDTO.setAgendaId(ID);
         votingDTO.setMinutes(MINUTES);
 
         voteDTO = new VoteDTO();

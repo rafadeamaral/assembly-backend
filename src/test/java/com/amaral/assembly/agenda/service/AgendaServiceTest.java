@@ -105,7 +105,7 @@ class AgendaServiceTest {
         agendaDTO.setEventId(ID);
 
         votingDTO = new VotingDTO();
-        votingDTO.setId(ID);
+        votingDTO.setAgendaId(ID);
         votingDTO.setMinutes(MINUTES);
 
         eventDTO = new EventDTO();

@@ -9,7 +9,7 @@ import lombok.Setter;
 public class VotingDTO {
 
     @JsonIgnore
-    private Integer id;
+    private Integer agendaId;
 
     private Long minutes;
 

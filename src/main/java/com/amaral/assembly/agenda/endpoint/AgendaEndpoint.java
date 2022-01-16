@@ -4,6 +4,7 @@ import com.amaral.assembly.agenda.domain.AgendaDTO;
 import com.amaral.assembly.agenda.service.AgendaService;
 import com.amaral.assembly.vote.domain.VoteDTO;
 import com.amaral.assembly.vote.domain.VotingDTO;
+import com.amaral.assembly.vote.domain.VotingResultDTO;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -70,11 +71,19 @@ public class AgendaEndpoint {
     @PostMapping(value = ID + "/voting")
     public ResponseEntity<VotingDTO> voting(@PathVariable Integer id, @RequestBody VotingDTO body) {
 
-        body.setId(id);
+        body.setAgendaId(id);
 
         service.voting(body);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = ID + "/voting/result")
+    public ResponseEntity<VotingResultDTO> findVotingResult(@PathVariable Integer id) {
+
+        VotingResultDTO body = service.findVotingResultByAgenda(id);
+
+        return ResponseEntity.ok(body);
     }
 
     @PostMapping(value = ID + "/vote")
