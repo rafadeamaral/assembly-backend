@@ -7,6 +7,7 @@ import com.amaral.assembly.agenda.repository.AgendaRepository;
 import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.common.exception.ObjectNotFoundException;
 import com.amaral.assembly.common.exception.ServiceException;
+import com.amaral.assembly.event.domain.EventDTO;
 import com.amaral.assembly.event.service.EventService;
 import com.amaral.assembly.vote.domain.VoteDTO;
 import com.amaral.assembly.vote.domain.VotingDTO;
@@ -15,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -115,6 +117,8 @@ public class AgendaService {
 
         validateVotingStatus(obj);
 
+        validateEvent(obj);
+
         if (!isNull(votingDTO.getMinutes())) {
 
             validateVotingMinutes(votingDTO);
@@ -129,6 +133,16 @@ public class AgendaService {
         obj.setStatus(AgendaStatus.ON_VOTING);
 
         save(obj);
+    }
+
+    private void validateEvent(AgendaDTO obj) {
+
+        EventDTO eventDTO = eventService.findById(obj.getId());
+
+        if (LocalDate.now().isAfter(eventDTO.getDate())) {
+
+            throw new ServiceException("invalid.event.date");
+        }
     }
 
     private void validateVotingMinutes(VotingDTO votingDTO) {
