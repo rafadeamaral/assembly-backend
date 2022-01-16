@@ -9,6 +9,6 @@ public class VotingDTO {
 
     private Integer id;
 
-    private Long timeInMinutes;
+    private Long minutes;
 
 }

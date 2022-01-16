@@ -1,13 +1,13 @@
-package com.amaral.assembly.minute.service;
+package com.amaral.assembly.agenda.service;
 
+import com.amaral.assembly.agenda.domain.Agenda;
+import com.amaral.assembly.agenda.domain.AgendaDTO;
+import com.amaral.assembly.agenda.domain.AgendaStatus;
+import com.amaral.assembly.agenda.repository.AgendaRepository;
 import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.common.exception.ObjectNotFoundException;
 import com.amaral.assembly.common.exception.ServiceException;
 import com.amaral.assembly.event.service.EventService;
-import com.amaral.assembly.minute.domain.Minute;
-import com.amaral.assembly.minute.domain.MinuteDTO;
-import com.amaral.assembly.minute.domain.MinuteStatus;
-import com.amaral.assembly.minute.repository.MinuteRepository;
 import com.amaral.assembly.vote.domain.VoteDTO;
 import com.amaral.assembly.vote.domain.VotingDTO;
 import com.amaral.assembly.vote.service.VoteService;
@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 
 @Service
-public class MinuteService {
+public class AgendaService {
 
     @Autowired
-    private MinuteRepository repository;
+    private AgendaRepository repository;
 
     @Autowired
     private ModelMapper mapper;
@@ -37,31 +37,31 @@ public class MinuteService {
     @Autowired
     private VoteService voteService;
 
-    public List<MinuteDTO> findAll() {
+    public List<AgendaDTO> findAll() {
 
         return repository.findAll()
-                .stream().map(obj -> mapper.map(obj, MinuteDTO.class)).collect(Collectors.toList());
+                .stream().map(obj -> mapper.map(obj, AgendaDTO.class)).collect(Collectors.toList());
     }
 
-    public MinuteDTO findById(Integer id) {
+    public AgendaDTO findById(Integer id) {
 
-        Optional<Minute> optional = repository.findById(id);
+        Optional<Agenda> optional = repository.findById(id);
 
-        Minute entity = optional.orElseThrow(() -> new ObjectNotFoundException("minute.not.found"));
+        Agenda entity = optional.orElseThrow(() -> new ObjectNotFoundException("agenda.not.found"));
 
-        return mapper.map(entity, MinuteDTO.class);
+        return mapper.map(entity, AgendaDTO.class);
     }
 
-    public MinuteDTO create(MinuteDTO obj) {
+    public AgendaDTO create(AgendaDTO obj) {
 
         validateTitle(obj);
 
-        obj.setStatus(MinuteStatus.OPEN);
+        obj.setStatus(AgendaStatus.OPEN);
 
         return save(obj);
     }
 
-    public MinuteDTO update(MinuteDTO obj) {
+    public AgendaDTO update(AgendaDTO obj) {
 
         findById(obj.getId());
 
@@ -70,20 +70,20 @@ public class MinuteService {
         return save(obj);
     }
 
-    private MinuteDTO save(MinuteDTO obj) {
+    private AgendaDTO save(AgendaDTO obj) {
 
         eventService.findById(obj.getEventId());
 
-        Minute entity = mapper.map(obj, Minute.class);
+        Agenda entity = mapper.map(obj, Agenda.class);
 
         entity = repository.save(entity);
 
-        return mapper.map(entity, MinuteDTO.class);
+        return mapper.map(entity, AgendaDTO.class);
     }
 
-    private void validateTitle(MinuteDTO obj) {
+    private void validateTitle(AgendaDTO obj) {
 
-        Optional<Minute> optional = repository.findByTitleIgnoreCase(obj.getTitle());
+        Optional<Agenda> optional = repository.findByTitleIgnoreCase(obj.getTitle());
 
         if (optional.isPresent() && !optional.get().getId().equals(obj.getId())) {
 
@@ -93,13 +93,13 @@ public class MinuteService {
 
     public void voting(VotingDTO votingDTO) {
 
-        MinuteDTO obj = findById(votingDTO.getId());
+        AgendaDTO obj = findById(votingDTO.getId());
 
-        if (!isNull(votingDTO.getTimeInMinutes())) {
+        if (!isNull(votingDTO.getMinutes())) {
 
-            if (votingDTO.getTimeInMinutes() > 0) {
+            if (votingDTO.getMinutes() > 0) {
 
-                obj.setFinalVoting(LocalDateTime.now().plusMinutes(votingDTO.getTimeInMinutes()));
+                obj.setFinalVoting(LocalDateTime.now().plusMinutes(votingDTO.getMinutes()));
 
             } else {
 
@@ -111,18 +111,18 @@ public class MinuteService {
             obj.setFinalVoting(LocalDateTime.now().plusMinutes(1));
         }
 
-        obj.setStatus(MinuteStatus.ON_VOTING);
+        obj.setStatus(AgendaStatus.ON_VOTING);
 
         update(obj);
     }
 
     public void closeVoting() {
 
-        repository.findByFinalVoting(MinuteStatus.ON_VOTING, LocalDateTime.now()).forEach(minute -> {
+        repository.findByFinalVoting(AgendaStatus.ON_VOTING, LocalDateTime.now()).forEach(entity -> {
 
-            minute.setStatus(MinuteStatus.CLOSED);
+            entity.setStatus(AgendaStatus.CLOSED);
 
-            MinuteDTO obj = mapper.map(minute, MinuteDTO.class);
+            AgendaDTO obj = mapper.map(entity, AgendaDTO.class);
 
             update(obj);
         });
@@ -130,11 +130,11 @@ public class MinuteService {
 
     public void vote(VoteDTO voteDTO) {
 
-        MinuteDTO obj = findById(voteDTO.getMinuteId());
+        AgendaDTO obj = findById(voteDTO.getAgendaId());
 
-        if (!MinuteStatus.ON_VOTING.equals(obj.getStatus())) {
+        if (!AgendaStatus.ON_VOTING.equals(obj.getStatus())) {
 
-            throw new ServiceException("minute.not.open.voting");
+            throw new ServiceException("agenda.not.open.voting");
 
         } else {
 

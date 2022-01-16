@@ -1,7 +1,7 @@
 package com.amaral.assembly.vote.domain;
 
 import com.amaral.assembly.associate.domain.Associate;
-import com.amaral.assembly.minute.domain.Minute;
+import com.amaral.assembly.agenda.domain.Agenda;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class VoteId implements Serializable {
 
     @ManyToOne
-    private Minute minute;
+    private Agenda agenda;
 
     @ManyToOne
     private Associate associate;

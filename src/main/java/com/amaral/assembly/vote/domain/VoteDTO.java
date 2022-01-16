@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 public class VoteDTO {
 
-    private Integer minuteId;
+    private Integer agendaId;
 
     private Integer associateId;
 

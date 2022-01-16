@@ -1,4 +1,4 @@
-package com.amaral.assembly.minute.domain;
+package com.amaral.assembly.agenda.domain;
 
 import com.amaral.assembly.event.domain.Event;
 import lombok.Getter;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-public class Minute {
+public class Agenda {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class Minute {
     private String description;
 
     @Enumerated(EnumType.ORDINAL)
-    private MinuteStatus status;
+    private AgendaStatus status;
 
     private LocalDateTime finalVoting;
 

@@ -1,7 +1,7 @@
-package com.amaral.assembly.minute.endpoint;
+package com.amaral.assembly.agenda.endpoint;
 
-import com.amaral.assembly.minute.domain.MinuteDTO;
-import com.amaral.assembly.minute.service.MinuteService;
+import com.amaral.assembly.agenda.domain.AgendaDTO;
+import com.amaral.assembly.agenda.service.AgendaService;
 import com.amaral.assembly.vote.domain.VoteDTO;
 import com.amaral.assembly.vote.domain.VotingDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,34 +19,34 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/minute")
-public class MinuteEndpoint {
+@RequestMapping(value = "/agenda")
+public class AgendaEndpoint {
 
     private static final String ID = "/{id}";
 
     @Autowired
-    private MinuteService service;
+    private AgendaService service;
 
     @GetMapping
-    public ResponseEntity<List<MinuteDTO>> findAll() {
+    public ResponseEntity<List<AgendaDTO>> findAll() {
 
-        List<MinuteDTO> body = service.findAll();
+        List<AgendaDTO> body = service.findAll();
 
         return ResponseEntity.ok(body);
     }
 
     @GetMapping(value = ID)
-    public ResponseEntity<MinuteDTO> findById(@PathVariable Integer id) {
+    public ResponseEntity<AgendaDTO> findById(@PathVariable Integer id) {
 
-        MinuteDTO body = service.findById(id);
+        AgendaDTO body = service.findById(id);
 
         return ResponseEntity.ok(body);
     }
 
     @PostMapping
-    public ResponseEntity<MinuteDTO> create(@RequestBody MinuteDTO body) {
+    public ResponseEntity<AgendaDTO> create(@RequestBody AgendaDTO body) {
 
-        MinuteDTO obj = service.create(body);
+        AgendaDTO obj = service.create(body);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path(ID).buildAndExpand(obj.getId()).toUri();
@@ -55,7 +55,7 @@ public class MinuteEndpoint {
     }
 
     @PutMapping(value = ID)
-    public ResponseEntity<MinuteDTO> update(@PathVariable Integer id, @RequestBody MinuteDTO body) {
+    public ResponseEntity<AgendaDTO> update(@PathVariable Integer id, @RequestBody AgendaDTO body) {
 
         body.setId(id);
 
@@ -65,7 +65,7 @@ public class MinuteEndpoint {
     }
 
     @PostMapping(value = ID + "/voting")
-    public ResponseEntity<MinuteDTO> voting(@PathVariable Integer id, @RequestBody VotingDTO body) {
+    public ResponseEntity<AgendaDTO> voting(@PathVariable Integer id, @RequestBody VotingDTO body) {
 
         body.setId(id);
 
@@ -77,7 +77,7 @@ public class MinuteEndpoint {
     @PostMapping(value = ID + "/vote")
     public ResponseEntity<VoteDTO> vote(@PathVariable Integer id, @RequestBody VoteDTO body) {
 
-        body.setMinuteId(id);
+        body.setAgendaId(id);
 
         service.vote(body);
 

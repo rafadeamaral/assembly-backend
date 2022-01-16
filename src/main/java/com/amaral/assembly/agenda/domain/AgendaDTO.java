@@ -1,4 +1,4 @@
-package com.amaral.assembly.minute.domain;
+package com.amaral.assembly.agenda.domain;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
-public class MinuteDTO {
+public class AgendaDTO {
 
     private Integer id;
 
@@ -15,7 +15,7 @@ public class MinuteDTO {
 
     private String description;
 
-    private MinuteStatus status;
+    private AgendaStatus status;
 
     private LocalDateTime finalVoting;
 
