@@ -63,11 +63,29 @@ public class AgendaService {
 
     public AgendaDTO update(AgendaDTO obj) {
 
-        findById(obj.getId());
+        AgendaDTO dto = findById(obj.getId());
+
+        validateStatus(obj, dto);
 
         validateTitle(obj);
 
         return save(obj);
+    }
+
+    private void validateStatus(AgendaDTO obj, AgendaDTO dto) {
+
+        if (!isNull(obj.getStatus())) {
+
+            if (!AgendaStatus.CANCELED.equals(obj.getStatus())) {
+
+                throw new ServiceException("status.must.be.canceled.only");
+            }
+
+            if (!AgendaStatus.OPEN.equals(dto.getStatus())) {
+
+                throw new ServiceException("only.allowed.cancel.open.agenda");
+            }
+        }
     }
 
     private AgendaDTO save(AgendaDTO obj) {
@@ -95,16 +113,13 @@ public class AgendaService {
 
         AgendaDTO obj = findById(votingDTO.getId());
 
+        validateVotingStatus(obj);
+
         if (!isNull(votingDTO.getMinutes())) {
 
-            if (votingDTO.getMinutes() > 0) {
+            validateVotingMinutes(votingDTO);
 
-                obj.setFinalVoting(LocalDateTime.now().plusMinutes(votingDTO.getMinutes()));
-
-            } else {
-
-                throw new ServiceException("invalid.voting.time");
-            }
+            obj.setFinalVoting(LocalDateTime.now().plusMinutes(votingDTO.getMinutes()));
 
         } else {
 
@@ -113,7 +128,23 @@ public class AgendaService {
 
         obj.setStatus(AgendaStatus.ON_VOTING);
 
-        update(obj);
+        save(obj);
+    }
+
+    private void validateVotingMinutes(VotingDTO votingDTO) {
+
+        if (votingDTO.getMinutes() < 1) {
+
+            throw new ServiceException("invalid.voting.time");
+        }
+    }
+
+    private void validateVotingStatus(AgendaDTO obj) {
+
+        if (!AgendaStatus.OPEN.equals(obj.getStatus())) {
+
+            throw new ServiceException("only.allowed.open.voting.open.agenda");
+        }
     }
 
     public void closeVoting() {
@@ -124,7 +155,7 @@ public class AgendaService {
 
             AgendaDTO obj = mapper.map(entity, AgendaDTO.class);
 
-            update(obj);
+            save(obj);
         });
     }
 
@@ -132,13 +163,17 @@ public class AgendaService {
 
         AgendaDTO obj = findById(voteDTO.getAgendaId());
 
+        validateVoteStatus(obj);
+
+        voteService.create(voteDTO);
+    }
+
+    private void validateVoteStatus(AgendaDTO obj) {
+
         if (!AgendaStatus.ON_VOTING.equals(obj.getStatus())) {
 
             throw new ServiceException("agenda.not.open.voting");
-
-        } else {
-
-            voteService.create(voteDTO);
         }
     }
+
 }

@@ -6,6 +6,7 @@ import com.amaral.assembly.associate.domain.AssociateStatus;
 import com.amaral.assembly.associate.repository.AssociateRepository;
 import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.common.exception.ObjectNotFoundException;
+import com.amaral.assembly.common.exception.ServiceException;
 import com.amaral.assembly.user.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Service
 public class AssociateService {
@@ -53,11 +56,21 @@ public class AssociateService {
 
     public AssociateDTO update(AssociateDTO obj) {
 
-        findById(obj.getId());
+        AssociateDTO dto = findById(obj.getId());
 
-        validateCpf(obj);
+        validateCpfUpdate(obj, dto);
+
+        obj.setCpf(dto.getCpf());
 
         return save(obj);
+    }
+
+    private void validateCpfUpdate(AssociateDTO obj, AssociateDTO dto) {
+
+        if (!isNull(obj.getCpf()) && !obj.getCpf().equals(dto.getCpf())) {
+
+            throw new ServiceException("cpf.cannot.be.changed");
+        }
     }
 
     private AssociateDTO save(AssociateDTO obj) {

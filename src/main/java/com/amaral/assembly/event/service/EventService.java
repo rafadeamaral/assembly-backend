@@ -2,6 +2,7 @@ package com.amaral.assembly.event.service;
 
 import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.common.exception.ObjectNotFoundException;
+import com.amaral.assembly.common.exception.ServiceException;
 import com.amaral.assembly.event.domain.Event;
 import com.amaral.assembly.event.domain.EventDTO;
 import com.amaral.assembly.event.repository.EventRepository;
@@ -54,7 +55,22 @@ public class EventService {
     }
 
     public void delete(Integer id) {
+
+        findById(id);
+
+        validateDelete(id);
+
         repository.deleteById(id);
+    }
+
+    private void validateDelete(Integer id) {
+
+        Integer count = repository.countAgendaById(id);
+
+        if (!count.equals(0)) {
+
+            throw new ServiceException("agenda.already.registered");
+        }
     }
 
     private EventDTO save(EventDTO obj) {

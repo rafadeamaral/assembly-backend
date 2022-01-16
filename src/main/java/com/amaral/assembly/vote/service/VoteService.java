@@ -32,15 +32,18 @@ public class VoteService {
 
         Vote entity = mapper.map(obj, Vote.class);
 
+        validateVote(entity);
+
+        repository.save(entity);
+    }
+
+    private void validateVote(Vote entity) {
+
         Optional<Vote> optional = repository.findById(entity.getId());
 
         if (optional.isPresent()) {
 
             throw new DataIntegratyViolationException("vote.already.registered");
-
-        } else {
-
-            repository.save(entity);
         }
     }
 
