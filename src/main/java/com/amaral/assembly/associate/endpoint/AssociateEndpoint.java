@@ -2,6 +2,7 @@ package com.amaral.assembly.associate.endpoint;
 
 import com.amaral.assembly.associate.domain.AssociateDTO;
 import com.amaral.assembly.associate.service.AssociateService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+@Api(tags = "Associate")
 @RestController
 @RequestMapping(value = "/associate")
 public class AssociateEndpoint {

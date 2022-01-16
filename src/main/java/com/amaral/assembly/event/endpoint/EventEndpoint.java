@@ -2,6 +2,7 @@ package com.amaral.assembly.event.endpoint;
 
 import com.amaral.assembly.event.domain.EventDTO;
 import com.amaral.assembly.event.service.EventService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +19,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+@Api(tags = "Event")
 @RestController
 @RequestMapping(value = "/event")
 public class EventEndpoint {

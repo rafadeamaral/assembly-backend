@@ -1,5 +1,6 @@
 package com.amaral.assembly.agenda.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +22,7 @@ public class AgendaDTO {
 
     private AgendaStatus status;
 
+    @JsonIgnore
     private LocalDateTime finalVoting;
 
     @NotNull(message = "event.not.null")

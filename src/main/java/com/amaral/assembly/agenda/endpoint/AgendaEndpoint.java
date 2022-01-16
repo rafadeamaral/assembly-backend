@@ -4,6 +4,7 @@ import com.amaral.assembly.agenda.domain.AgendaDTO;
 import com.amaral.assembly.agenda.service.AgendaService;
 import com.amaral.assembly.vote.domain.VoteDTO;
 import com.amaral.assembly.vote.domain.VotingDTO;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+@Api(tags = "Agenda")
 @RestController
 @RequestMapping(value = "/agenda")
 public class AgendaEndpoint {
