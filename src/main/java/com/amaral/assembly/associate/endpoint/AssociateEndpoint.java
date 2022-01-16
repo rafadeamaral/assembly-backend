@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class AssociateEndpoint {
     }
 
     @PostMapping
-    public ResponseEntity<AssociateDTO> create(@RequestBody AssociateDTO body) {
+    public ResponseEntity<AssociateDTO> create(@Valid @RequestBody AssociateDTO body) {
 
         AssociateDTO obj = service.create(body);
 
@@ -53,7 +54,7 @@ public class AssociateEndpoint {
     }
 
     @PutMapping(value = ID)
-    public ResponseEntity<AssociateDTO> update(@PathVariable Integer id, @RequestBody AssociateDTO body) {
+    public ResponseEntity<AssociateDTO> update(@PathVariable Integer id, @Valid @RequestBody AssociateDTO body) {
 
         body.setId(id);
 

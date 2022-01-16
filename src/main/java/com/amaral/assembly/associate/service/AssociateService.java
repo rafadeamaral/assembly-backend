@@ -60,14 +60,17 @@ public class AssociateService {
 
         validateCpfUpdate(obj, dto);
 
-        obj.setCpf(dto.getCpf());
+        if (isNull(obj.getStatus())) {
+
+            obj.setStatus(dto.getStatus());
+        }
 
         return save(obj);
     }
 
     private void validateCpfUpdate(AssociateDTO obj, AssociateDTO dto) {
 
-        if (!isNull(obj.getCpf()) && !obj.getCpf().equals(dto.getCpf())) {
+        if (!obj.getCpf().equals(dto.getCpf())) {
 
             throw new ServiceException("cpf.cannot.be.changed");
         }
