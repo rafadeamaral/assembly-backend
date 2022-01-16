@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class EventEndpoint {
     }
 
     @PostMapping
-    public ResponseEntity<EventDTO> create(@RequestBody EventDTO body) {
+    public ResponseEntity<EventDTO> create(@Valid @RequestBody EventDTO body) {
 
         EventDTO obj = service.create(body);
 
@@ -54,11 +55,11 @@ public class EventEndpoint {
     }
 
     @PutMapping(value = ID)
-    public ResponseEntity<EventDTO> update(@PathVariable Integer id, @RequestBody EventDTO obj) {
+    public ResponseEntity<EventDTO> update(@PathVariable Integer id, @Valid @RequestBody EventDTO body) {
 
-        obj.setId(id);
+        body.setId(id);
 
-        EventDTO body = service.update(obj);
+        body = service.update(body);
 
         return ResponseEntity.ok(body);
     }
