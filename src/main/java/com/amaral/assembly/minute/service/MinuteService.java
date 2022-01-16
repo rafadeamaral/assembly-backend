@@ -3,14 +3,14 @@ package com.amaral.assembly.minute.service;
 import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.common.exception.ObjectNotFoundException;
 import com.amaral.assembly.common.exception.ServiceException;
-import com.amaral.assembly.event.domain.Event;
-import com.amaral.assembly.event.domain.EventDTO;
 import com.amaral.assembly.event.service.EventService;
 import com.amaral.assembly.minute.domain.Minute;
 import com.amaral.assembly.minute.domain.MinuteDTO;
 import com.amaral.assembly.minute.domain.MinuteStatus;
-import com.amaral.assembly.minute.domain.VotingDTO;
 import com.amaral.assembly.minute.repository.MinuteRepository;
+import com.amaral.assembly.vote.domain.VoteDTO;
+import com.amaral.assembly.vote.domain.VotingDTO;
+import com.amaral.assembly.vote.service.VoteService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +34,9 @@ public class MinuteService {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private VoteService voteService;
+
     public List<MinuteDTO> findAll() {
 
         return repository.findAll()
@@ -51,7 +54,7 @@ public class MinuteService {
 
     public MinuteDTO create(MinuteDTO obj) {
 
-        validateByTitle(obj);
+        validateTitle(obj);
 
         obj.setStatus(MinuteStatus.OPEN);
 
@@ -62,27 +65,23 @@ public class MinuteService {
 
         findById(obj.getId());
 
-        validateByTitle(obj);
+        validateTitle(obj);
 
         return save(obj);
     }
 
     private MinuteDTO save(MinuteDTO obj) {
 
-        EventDTO eventDTO = eventService.findById(obj.getEventId());
-
-        Event event = new Event();
-        event.setId(eventDTO.getId());
+        eventService.findById(obj.getEventId());
 
         Minute entity = mapper.map(obj, Minute.class);
-        entity.setEvent(event);
 
         entity = repository.save(entity);
 
         return mapper.map(entity, MinuteDTO.class);
     }
 
-    private void validateByTitle(MinuteDTO obj) {
+    private void validateTitle(MinuteDTO obj) {
 
         Optional<Minute> optional = repository.findByTitleIgnoreCase(obj.getTitle());
 
@@ -92,15 +91,15 @@ public class MinuteService {
         }
     }
 
-    public MinuteDTO voting(VotingDTO voteDTO) {
+    public void voting(VotingDTO votingDTO) {
 
-        MinuteDTO obj = findById(voteDTO.getId());
+        MinuteDTO obj = findById(votingDTO.getId());
 
-        if (!isNull(voteDTO.getTimeInMinutes())) {
+        if (!isNull(votingDTO.getTimeInMinutes())) {
 
-            if (voteDTO.getTimeInMinutes() > 0) {
+            if (votingDTO.getTimeInMinutes() > 0) {
 
-                obj.setFinalVoting(LocalDateTime.now().plusMinutes(voteDTO.getTimeInMinutes()));
+                obj.setFinalVoting(LocalDateTime.now().plusMinutes(votingDTO.getTimeInMinutes()));
 
             } else {
 
@@ -114,9 +113,7 @@ public class MinuteService {
 
         obj.setStatus(MinuteStatus.ON_VOTING);
 
-        obj = update(obj);
-
-        return obj;
+        update(obj);
     }
 
     public void closeVoting() {
@@ -131,4 +128,17 @@ public class MinuteService {
         });
     }
 
+    public void vote(VoteDTO voteDTO) {
+
+        MinuteDTO obj = findById(voteDTO.getMinuteId());
+
+        if (!MinuteStatus.ON_VOTING.equals(obj.getStatus())) {
+
+            throw new ServiceException("minute.not.open.voting");
+
+        } else {
+
+            voteService.create(voteDTO);
+        }
+    }
 }

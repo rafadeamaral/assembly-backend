@@ -1,4 +1,4 @@
-package com.amaral.assembly.minute.domain;
+package com.amaral.assembly.vote.domain;
 
 import lombok.Getter;
 import lombok.Setter;

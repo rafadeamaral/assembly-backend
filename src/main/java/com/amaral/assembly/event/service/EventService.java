@@ -39,7 +39,7 @@ public class EventService {
 
     public EventDTO create(EventDTO obj) {
 
-        validateByTitle(obj);
+        validateTitle(obj);
 
         return save(obj);
     }
@@ -48,7 +48,7 @@ public class EventService {
 
         findById(obj.getId());
 
-        validateByTitle(obj);
+        validateTitle(obj);
 
         return save(obj);
     }
@@ -66,7 +66,7 @@ public class EventService {
         return mapper.map(entity, EventDTO.class);
     }
 
-    private void validateByTitle(EventDTO obj) {
+    private void validateTitle(EventDTO obj) {
 
         Optional<Event> optional = repository.findByTitleIgnoreCase(obj.getTitle());
 

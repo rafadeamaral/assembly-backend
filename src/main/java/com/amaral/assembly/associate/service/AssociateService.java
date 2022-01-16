@@ -6,6 +6,7 @@ import com.amaral.assembly.associate.domain.AssociateStatus;
 import com.amaral.assembly.associate.repository.AssociateRepository;
 import com.amaral.assembly.common.exception.DataIntegratyViolationException;
 import com.amaral.assembly.common.exception.ObjectNotFoundException;
+import com.amaral.assembly.user.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,9 @@ public class AssociateService {
 
     @Autowired
     private ModelMapper mapper;
+
+    @Autowired
+    private UserService userService;
 
     public List<AssociateDTO> findAll() {
 
@@ -40,7 +44,7 @@ public class AssociateService {
 
     public AssociateDTO create(AssociateDTO obj) {
 
-        validateByCpf(obj);
+        validateCpf(obj);
 
         obj.setStatus(AssociateStatus.ACTIVE);
 
@@ -51,7 +55,7 @@ public class AssociateService {
 
         findById(obj.getId());
 
-        validateByCpf(obj);
+        validateCpf(obj);
 
         return save(obj);
     }
@@ -65,7 +69,7 @@ public class AssociateService {
         return mapper.map(entity, AssociateDTO.class);
     }
 
-    private void validateByCpf(AssociateDTO obj) {
+    private void validateCpf(AssociateDTO obj) {
 
         Optional<Associate> optional = repository.findByCpf(obj.getCpf());
 
@@ -73,6 +77,13 @@ public class AssociateService {
 
             throw new DataIntegratyViolationException("cpf.already.registered");
         }
+
+        userService.validateCpf(obj.getCpf());
+    }
+
+    public void validateVote(AssociateDTO obj) {
+
+        userService.validateVote(obj.getCpf());
     }
 
 }

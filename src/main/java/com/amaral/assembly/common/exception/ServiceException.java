@@ -1,9 +1,15 @@
 package com.amaral.assembly.common.exception;
 
-public class ServiceException extends RuntimeException{
+import lombok.Getter;
 
-    public ServiceException(String message) {
+@Getter
+public class ServiceException extends RuntimeException {
+
+    private Object[] params;
+
+    public ServiceException(String message, Object... args) {
         super(message);
+        params = args;
     }
 
 }

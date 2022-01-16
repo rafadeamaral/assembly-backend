@@ -24,23 +24,38 @@ public class EcxeptionHandler {
     @ExceptionHandler(ObjectNotFoundException.class)
     public ResponseEntity<StandardError> objectNotFound(ObjectNotFoundException ex, HttpServletRequest request) {
 
-        StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), getMessage(ex.getMessage()), request.getRequestURI());
+        StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(),
+                getMessage(ex.getMessage()), request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler({ DataIntegratyViolationException.class, ServiceException.class })
-    public ResponseEntity<StandardError> dataIntegrityViolationAndServiceException(Exception ex, HttpServletRequest request) {
+    @ExceptionHandler(DataIntegratyViolationException.class)
+    public ResponseEntity<StandardError> dataIntegratyViolation(DataIntegratyViolationException ex, HttpServletRequest request) {
 
-        StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), getMessage(ex.getMessage()), request.getRequestURI());
+        StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
+                getMessage(ex.getMessage()), request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<StandardError> serviceException(ServiceException ex, HttpServletRequest request) {
+
+        StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
+                getMessage(ex.getMessage(), ex.getParams()), request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     private String getMessage(String key, Object... args) {
+
         try {
+
             return messageSource.getMessage(key, args, LocaleContext.get());
+
         } catch (Exception e) {
+
             return key;
         }
     }
