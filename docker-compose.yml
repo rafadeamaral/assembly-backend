@@ -11,6 +11,11 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - assembly-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
       
   mysql:
     image: mysql:5.7
@@ -26,10 +31,16 @@ services:
       - mysql-data:/var/lib/mysql
     networks: 
       - assembly-network
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 20s
+      retries: 10
 
   assembly-backend:
     depends_on: 
-      - mysql
+      mysql:
+        condition: service_healthy
     build: ./assembly-backend/
     container_name: assembly-backend
     ports:
@@ -39,7 +50,8 @@ services:
       
   assembly-producer:
     depends_on: 
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     build: ./assembly-producer/
     container_name: assembly-producer
     ports:
@@ -49,7 +61,8 @@ services:
   
   assembly-consumer:
     depends_on: 
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     build: ./assembly-consumer/
     container_name: assembly-consumer
     ports:
