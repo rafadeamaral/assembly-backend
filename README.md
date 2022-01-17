@@ -1,20 +1,56 @@
-# assembly-backend
-Sistema para assembleias
+# Assembly back-end
 
-### Reference Documentation
-For further reference, please consider the following sections:
+Durante uma assembleia, após ser apresentada uma pauta a mesma é aberta para votação. Com isso o sistema permite
+o cadastro do evento da assembleia e após seu cadastro é permitido cadastrar as pautas. Com a pauta cadastrada é
+permitido abrir a mesma para votação e ao seu término é contabilizado e apresentado os votos. Para votar o
+associado deve estar cadastrado no sistema.
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.6.2/maven-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.6.2/maven-plugin/reference/html/#build-image)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/2.6.2/reference/htmlsingle/#boot-features-developing-web-applications)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/2.6.2/reference/htmlsingle/#boot-features-jpa-and-spring-data)
-* [Validation](https://docs.spring.io/spring-boot/docs/2.6.2/reference/htmlsingle/#boot-features-validation)
+## Tecnologias utilizadas
+- Java 11
+- Spring
+- Lombok
+- Mysql
+- Model Mapper
+- Swagger
+- RabbitMQ
+- JUnit
+- Maven
+- Docker
 
-### Guides
-The following guides illustrate how to use some features concretely:
+## Executar aplicação
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+Deve estar com o Docker rodando na máquina e ter instalado e configurado o Apache Maven.
+
+No terminal, executar os seguintes comandos (deve estar na pasta raiz do projeto):
+- mvn clean install
+- docker-compose up
+
+## Documentação da API
+
+Para a documentação da API foi utilizado o Swagger.
+
+Após rodar a aplicação é possível acessá-la pela URL:
+- http://localhost:8080/swagger-ui.html
+
+Foi adicionado ao projeto a collection do Postman: 
+- [Postman Collection](Assembly.postman_collection.json)
+
+## Aplicações
+
+### assembly-backend
+
+Aplicação back-end para gerenciamento das pautas.
+
+### assembly-producer
+
+Aplicação responsável para produzir as mensagerias.
+
+### assembly-consumer
+
+Aplicação responsável para consumir as mensagerias.
+
+## Versionamento da API
+
+Em ambiente corporativo o versionando é possível pelo GitLab ou Bitbucket. Onde o projeto versionado a um grupo, 
+é possível fazer um fork com a branch de trabalho. Ao término do desenvolvimento deve ser feito um pull request
+da origin para a upstream, onde o mesmo deve ser feito a revisão do código.
