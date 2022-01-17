@@ -1,0 +1,65 @@
+version: '3.5'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.9.11-management
+    container_name: rabbitmq-server
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - assembly-network
+      
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-server
+    environment:
+      MYSQL_DATABASE: 'assembly'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'secret'
+      MYSQL_ROOT_PASSWORD: 'secret'
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks: 
+      - assembly-network
+
+  assembly-backend:
+    depends_on: 
+      - mysql
+    build: ./assembly-backend/
+    container_name: assembly-backend
+    ports:
+      - "8080:8080"
+    networks:
+      - assembly-network
+      
+  assembly-producer:
+    depends_on: 
+      - rabbitmq
+    build: ./assembly-producer/
+    container_name: assembly-producer
+    ports:
+      - "8081:8081"
+    networks:
+      - assembly-network
+  
+  assembly-consumer:
+    depends_on: 
+      - rabbitmq
+    build: ./assembly-consumer/
+    container_name: assembly-consumer
+    ports:
+      - "8082:8082"
+    networks: 
+      - assembly-network
+
+volumes:
+  rabbitmq-data:
+  mysql-data:
+
+networks:
+  assembly-network:
