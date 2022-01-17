@@ -16,7 +16,9 @@ import com.amaral.assembly.vote.service.VoteService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +32,9 @@ import static java.util.Objects.isNull;
 @Service
 public class AgendaService {
 
+    @Value("${rabbitmq.endpoint}")
+    private String endpoint;
+
     @Autowired
     private AgendaRepository repository;
 
@@ -41,6 +46,9 @@ public class AgendaService {
 
     @Autowired
     private VoteService voteService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     public List<AgendaDTO> findAll() {
 
@@ -187,7 +195,23 @@ public class AgendaService {
             AgendaDTO obj = mapper.map(entity, AgendaDTO.class);
 
             save(obj);
+
+            sendVotingResult(obj.getId());
         });
+    }
+
+    private void sendVotingResult(Integer agendaId) {
+
+        try {
+
+            VotingResultDTO request = findVotingResultByAgenda(agendaId);
+
+            restTemplate.postForEntity(endpoint, request, String.class);
+
+        } catch (Exception e) {
+
+            log.error("sendVotingResult", e);
+        }
     }
 
     public void vote(VoteDTO voteDTO) {
