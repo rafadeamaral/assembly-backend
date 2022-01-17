@@ -161,7 +161,7 @@ public class AgendaService {
 
         EventDTO eventDTO = eventService.findById(obj.getEventId());
 
-        if (LocalDate.now().isAfter(eventDTO.getDate())) {
+        if (LocalDate.now().compareTo(eventDTO.getDate()) < 0) {
 
             throw new ServiceException("invalid.event.date");
         }
